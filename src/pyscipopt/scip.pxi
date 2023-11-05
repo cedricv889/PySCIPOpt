@@ -6,11 +6,17 @@ from os.path import splitext
 import os
 import sys
 import warnings
+import numpy as np
+
+cimport numpy as np
+from cpython cimport Py_INCREF, Py_DECREF
+from libc.stdlib cimport malloc, free
+from numpy.math cimport INFINITY, NAN
+from libc.math cimport sqrt as SQRT
 
 cimport cython
 from cpython cimport Py_INCREF, Py_DECREF
 from cpython.pycapsule cimport PyCapsule_New, PyCapsule_IsValid, PyCapsule_GetPointer
-from libc.stdlib cimport malloc, free
 from libc.stdio cimport fdopen, fclose
 from posix.stdio cimport fileno
 
@@ -274,6 +280,9 @@ def PY_SCIP_CALL(SCIP_RETCODE rc):
 
 cdef class Event:
     """Base class holding a pointer to corresponding SCIP_EVENT"""
+    cdef SCIP_EVENT* event
+    # can be used to store problem data
+    cdef public object data
 
     @staticmethod
     cdef create(SCIP_EVENT* scip_event):
@@ -322,6 +331,9 @@ cdef class Event:
 
 cdef class Column:
     """Base class holding a pointer to corresponding SCIP_COL"""
+    cdef SCIP_COL* scip_col
+    # can be used to store problem data
+    cdef public object data
 
     @staticmethod
     cdef create(SCIP_COL* scipcol):
@@ -383,6 +395,10 @@ cdef class Column:
 
 cdef class Row:
     """Base class holding a pointer to corresponding SCIP_ROW"""
+
+    cdef SCIP_ROW* scip_row
+    # can be used to store problem data
+    cdef public object data
 
     @staticmethod
     cdef create(SCIP_ROW* sciprow):
@@ -644,6 +660,10 @@ cdef class DomainChanges:
 cdef class Node:
     """Base class holding a pointer to corresponding SCIP_NODE"""
 
+    cdef SCIP_NODE* scip_node
+    # can be used to store problem data
+    cdef public object data
+
     @staticmethod
     cdef create(SCIP_NODE* scipnode):
         if scipnode == NULL:
@@ -761,6 +781,10 @@ cdef class Node:
 
 cdef class Variable(Expr):
     """Is a linear expression and has SCIP_VAR*"""
+
+    cdef SCIP_VAR* scip_var
+    # can be used to store problem data
+    cdef public object data
 
     @staticmethod
     cdef create(SCIP_VAR* scipvar):
